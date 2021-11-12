@@ -44,7 +44,7 @@ namespace InspirationTechAssessment.Services
         public async Task<decimal> AdjustAsync(AdjustmentInfo adjustmentInfo)
         {
             if (adjustmentInfo.Amount < 0) throw new Exception("Adjusment amount cannot be negative!");
-            var transaction = await _dbContext.Transactions.FirstOrDefaultAsync(t => t.Id == adjustmentInfo.TransactionId);
+            var transaction = await _dbContext.Transactions.Include(t => t.Account).FirstOrDefaultAsync(t => t.Id == adjustmentInfo.TransactionId);
             if (transaction == null) throw new Exception("No transaction exists with specified ID!");
             if (adjustmentInfo.Amount == transaction.Amount) throw new Exception("Adjustment amount should be different than the payment amount!");
             if (adjustmentInfo.Amount > transaction.Amount) return await IncreasePaymentAsync(transaction, adjustmentInfo.Amount);
